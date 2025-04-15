@@ -1,0 +1,101 @@
+%YAML 1.2
+---
+name: 4D
+file_extensions:
+  - 4dm
+scope: source.4dm
+contexts:
+  main:
+    - include: comments
+    - include: keywords
+    - include: strings
+    - include: numbers
+    - include: variables
+    - include: functions
+    - include: types
+    - include: operators
+    - include: other
+
+  comments:
+    - match: '/\*'
+      scope: punctuation.definition.comment.begin.4d
+      push:
+        - meta_scope: comment.block.4d
+        - match: '\*/'
+          scope: punctuation.definition.comment.end.4d
+          pop: true
+    - match: '\s*+(//)'
+      captures:
+        1: punctuation.definition.comment.4d
+      scope: comment.line.double-slash.4d
+      push:
+        - meta_scope: comment.line.double-slash.4d
+        - match: '\n'
+          pop: true
+
+  strings:
+    - match: '"'
+      scope: punctuation.definition.string.begin.4d
+      push:
+        - meta_scope: string.quoted.double.4d
+        - match: '"'
+          scope: punctuation.definition.string.end.4d
+          pop: true
+        - match: '\\[ntr"\\]'
+          scope: constant.character.escape.4d
+
+  numbers:
+    - match: '\b0[xX][0-9a-fA-F]+\b'
+      scope: constant.numeric.hexadecimal.4d
+    - match: '\b[0-9]+[.,][0-9]+[eE]-?[0-9]+\b'
+      scope: constant.numeric.exponential.4d
+    - match: '\b[0-9]+[.,][0-9]+\b'
+      scope: constant.numeric.decimal.4d
+    - match: '(?<!\w|:)[0-9]+\b'
+      scope: constant.numeric.4d
+
+  variables:
+    - match: '\s*\$[0-9]+\b'
+      scope: variable.parameter.numeric.4d
+    - match: '\s*\$[\p{Letter}_][\p{Letter}_0-9]*\b'
+      scope: variable.other.local.4d
+    - match: '\s*<>\s*[\p{Letter}_][\p{Letter}_0-9]*\b'
+      scope: variable.other.interprocess.4d
+    - match: '\b(?i)(super|this|form|null|4d|ds|cs)\b'
+      scope: variable.language.orda.4d
+    - match: '\b(?i)(error method|error line|error formula|error|mousedown|mouseproc|mouse[xy]|keycode|modifiers|flddelimit|recdelimit|ok|document)\b'
+      scope: variable.classic.4d
+
+  functions:
+    - match: '(?<=\.)([\p{Letter}][\p{Letter}0-9]*)(?=\(|\.)'
+      scope: entity.name.function.orda.4d
+    - match: '\s*[\p{Letter}][\p{Letter} 0-9]*[\p{Letter}](?=(:C[0-9]+))\b'
+      scope: entity.name.function.classic.4d
+    - match: '\s*_[oO]_([cC]_)?[\p{Letter} ]+[\p{Letter}](?=(:C[0-9]+))\b'
+      scope: entity.name.function.classic.deprecated.4d
+
+  types:
+    - match: '\s*[cC]_[\p{Letter}]+(?=(:C[0-9]+))\b'
+      scope: variable.type.classic.4d
+    - match: '(?<= : )([\p{Letter}][\p{Letter}0-9]*)\b'
+      scope: variable.type.orda.4d
+    - match: '\b(?i)(property|var)\b'
+      scope: storage.type.4d
+
+  keywords:
+    - match: '\b(?i:try|catch|end try|return|break|continue|case of|au cas ou|end case|fin de cas|if|si|else|sinon|fin de si|boucle|fin de boucle|repeat|repeter|until|jusque|while|tant que|end while|fin tant que|pour chaque|end for each|end for|for each|for|end if|fin de chaque)\b'
+      scope: keyword.control.4d
+    - match: '\b(?i:(#DECLARE|alias|local|exposed|shared|function|end use|fin utiliser|begin sql|debut sql|end sql|fin sql|singleton|class constructor|class extends|use|utiliser))\b'
+      scope: keyword.other.4d
+
+  operators:
+    - match: '\+=|-=|\*=|/=|~\||&&|&|\|\||\||<<|>>|<=|>=|<|>|:=|\?\?|[\+\-\*/=#\^%?:]'
+      scope: keyword.operator.4d
+
+  other:
+    - match: '\s*[!][0-9]{2,4}-[0-9]{2}-[0-9]{2}[!]'
+      scope: constant.other.date.4d
+    - match: '\s*[!][0-9]{2}-[0-9]{2}-[0-9]{2,4}[!]'
+      scope: constant.other.date.4d
+    - match: '\s*[?][0-9]{2}:[0-9]{2}:[0-9]{2}[?]'
+      scope: constant.other.time.4d
